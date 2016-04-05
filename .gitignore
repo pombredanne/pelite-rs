@@ -1,0 +1,13 @@
+target/
+Cargo.lock
+
+# Visual Studio
+[Dd]ebug/
+[Rr]elease/
+ipch/
+*.sdf
+*.ncb
+*.opensdf
+*.opendb
+*.suo
+*.user
