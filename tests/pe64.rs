@@ -2,10 +2,10 @@ extern crate pelite;
 use std::path::Path;
 use pelite::pe64::peview::PeView;
 use pelite::pe64::pefile::PeFile;
-use pelite::pe64::exports::PeViewExports;
-use pelite::pe64::imports::PeViewImports;
-use pelite::pe64::relocs::PeViewRelocs;
-use pelite::pe64::resources::PeViewResources;
+use pelite::pe64::exports::PeExports;
+use pelite::pe64::imports::PeImports;
+use pelite::pe64::relocs::PeRelocs;
+use pelite::pe64::resources::PeResources;
 
 #[test]
 fn test_dummy64d_dll() {

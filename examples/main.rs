@@ -11,7 +11,7 @@ extern crate pelite;
 use pelite::pe;
 
 // You must import what features of the PE format you wish to work with, here we choose the PE imports.
-use pelite::pe::imports::PeViewImports;
+use pelite::pe::imports::PeImports;
 
 fn main() {
 	// Create a view in the module this code is currently executing in:

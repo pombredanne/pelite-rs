@@ -8,7 +8,7 @@ use super::image::*;
 ///
 /// PE images on disk have a different representation than those mapped to memory.
 /// In memory each section is aligned to page size (typically 4K), on disk this is a waste of space and uses a different alignment.
-/// Make sure to map the image to memory before using it with `PeView`!
+/// Use `super::pefile::PeFile::open` to map executables to memory!
 pub struct PeView<'a> {
 	image: &'a [u8],
 	vbase: Va,

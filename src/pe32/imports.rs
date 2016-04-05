@@ -64,11 +64,11 @@ impl<'a> fmt::Display for ImportDirectory<'a> {
 
 //----------------------------------------------------------------
 
-pub trait PeViewImports {
+pub trait PeImports {
 	fn imports(&self) -> Option<ImportDirectory>;
 }
 
-impl<'a> PeViewImports for PeView<'a> {
+impl<'a> PeImports for PeView<'a> {
 	fn imports(&self) -> Option<ImportDirectory> {
 		if let Some(datadir) = self.data_directory().get(IMAGE_DIRECTORY_ENTRY_IMPORT) {
 			if datadir.VirtualAddress != BADRVA {

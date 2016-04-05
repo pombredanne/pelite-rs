@@ -265,11 +265,11 @@ impl<'a> fmt::Display for ExportDirectory<'a> {
 
 //----------------------------------------------------------------
 
-pub trait PeViewExports {
+pub trait PeExports {
 	fn exports(&self) -> Option<ExportDirectory>;
 }
 
-impl<'a> PeViewExports for PeView<'a> {
+impl<'a> PeExports for PeView<'a> {
 	fn exports(&self) -> Option<ExportDirectory> {
 		if let Some(datadir) = self.data_directory().get(IMAGE_DIRECTORY_ENTRY_EXPORT) {
 			if datadir.VirtualAddress != BADRVA {

@@ -69,7 +69,6 @@ impl PeFile {
 			}
 			// This is rather arbitrary as based on experience
 			if dos.e_lfanew == 0 || dos.e_lfanew > 0x200 {
-				assert!(false);
 				return Err(PeError::Insanity);
 			}
 			dos.e_lfanew as usize

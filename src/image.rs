@@ -12,14 +12,14 @@ extern "C" {
 
 /// Get the base address of the module this code is linked with.
 ///
-/// This uses a linker pseudovariable and is only available on windows platform.
+/// This uses a linker pseudovariable and is only available on windows targets.
 #[cfg(all(windows, target_env = "msvc"))]
 pub fn image_base() -> &'static ImageDosHeader {
 	&__ImageBase
 }
 /// Get the base address of the module this code is linked with.
 ///
-/// This uses a linker pseudovariable and is only available on windows platform.
+/// This uses a linker pseudovariable and is only available on windows targets.
 #[cfg(all(windows, target_env = "gnu"))]
 pub fn image_base() -> &'static ImageDosHeader {
 	&_image_base__

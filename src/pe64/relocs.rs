@@ -1,6 +1,6 @@
 //! PE relocations.
 //!
-//! For a quick overview how this works, see this excellent [stackoverflow answer](https://stackoverflow.com/a/22513813).
+//! For a quick overview how relocs work, see this excellent [stackoverflow answer](https://stackoverflow.com/a/22513813).
 
 use std::{mem, fmt};
 
@@ -40,11 +40,11 @@ impl<'a> fmt::Display for RelocsDirectory<'a> {
 
 //----------------------------------------------------------------
 
-pub trait PeViewRelocs {
+pub trait PeRelocs {
 	fn relocs(&self) -> Option<RelocsDirectory>;
 }
 
-impl<'a> PeViewRelocs for PeView<'a> {
+impl<'a> PeRelocs for PeView<'a> {
 	fn relocs(&self) -> Option<RelocsDirectory> {
 		if let Some(datadir) = self.data_directory().get(IMAGE_DIRECTORY_ENTRY_BASERELOC) {
 			if datadir.VirtualAddress != BADRVA {
