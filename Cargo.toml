@@ -2,3 +2,8 @@
 name = "pelite"
 version = "0.1.0"
 authors = ["CursedGhost <CursedGhost@BitBucket.com>"]
+
+description = "Lightweight, memory-safe, zero-allocation library for reading and navigating PE binaries."
+repository = "https://github.com/CasualX/pelite"
+keywords = ["PE", "PE32", "PE32+", "PE64", "PeLite"]
+license = "MIT"

@@ -1,0 +1,6 @@
+LIBRARY DUMMY
+EXPORTS
+	??0CDummy@@QAE@XZ @1
+	?fnDummy@@YAHXZ = KERNEL32.GetProcAddress @5
+	?nDummy@@3HA @6 NONAME DATA
+
