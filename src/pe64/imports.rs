@@ -34,18 +34,18 @@ impl<'a> fmt::Display for ImportedSymbol<'a> {
 //----------------------------------------------------------------
 
 /// Imports directory.
-pub struct ImportDirectory<'a> {
-	view_: &'a PeView<'a>,
+pub struct ImportDirectory<'a: 'b, 'b> {
+	view_: &'b PeView<'a>,
 	datadir_: &'a ImageDataDirectory,
 }
 
-impl<'a> ImportDirectory<'a> {
+impl<'a, 'b> ImportDirectory<'a, 'b> {
 	/// Get the associated `PeView`.
 	pub fn view(&self) -> &PeView {
 		self.view_
 	}
 	/// Iterate over the import descriptors.
-	pub fn iter(&'a self) -> ImportDescriptorIterator<'a> {
+	pub fn iter(&'a self) -> ImportDescriptorIterator<'a, 'b> {
 		ImportDescriptorIterator {
 			view: self.view_,
 			it: self.datadir_.VirtualAddress,
@@ -53,7 +53,7 @@ impl<'a> ImportDirectory<'a> {
 	}
 }
 
-impl<'a> fmt::Display for ImportDirectory<'a> {
+impl<'a, 'b> fmt::Display for ImportDirectory<'a, 'b> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		for desc in self.iter() {
 			try!(write!(f, "{}", desc));
@@ -89,13 +89,13 @@ impl<'a> PeImports for PeView<'a> {
 
 //----------------------------------------------------------------
 
-pub struct ImportDescriptorIterator<'a> {
-	view: &'a PeView<'a>,
+pub struct ImportDescriptorIterator<'a: 'b, 'b> {
+	view: &'b PeView<'a>,
 	it: Rva,
 }
 
-impl<'a> Iterator for ImportDescriptorIterator<'a> {
-	type Item = ImportDescriptor<'a>;
+impl<'a, 'b> Iterator for ImportDescriptorIterator<'a, 'b> {
+	type Item = ImportDescriptor<'a, 'b>;
 
 	fn next(&mut self) -> Option<Self::Item> {
 		let image = self.view.read_struct::<ImageImportDescriptor>(self.it).unwrap();
@@ -123,22 +123,22 @@ impl<'a> Iterator for ImportDescriptorIterator<'a> {
 
 //----------------------------------------------------------------
 
-pub struct ImportDescriptor<'a> {
-	view_: &'a PeView<'a>,
+pub struct ImportDescriptor<'a: 'b, 'b> {
+	view_: &'b PeView<'a>,
 	image_: &'a ImageImportDescriptor,
 }
 
-impl<'a> ImportDescriptor<'a> {
+impl<'a, 'b> ImportDescriptor<'a, 'b> {
 	/// Get the associated `PeView`.
-	pub fn view(&self) -> &PeView {
+	pub fn view(&self) -> &'b PeView {
 		self.view_
 	}
 	/// Get the underlying import descriptor image.
-	pub fn image(&self) -> &ImageImportDescriptor {
+	pub fn image(&self) -> &'a ImageImportDescriptor {
 		self.image_
 	}
 	/// Get the DLL name imported from.
-	pub fn dll_name(&self) -> &str {
+	pub fn dll_name(&self) -> &'a str {
 		self.view_.read_str(self.image_.Name).unwrap()
 	}
 	/// Iterate over the import name table.
@@ -157,7 +157,7 @@ impl<'a> ImportDescriptor<'a> {
 	}
 }
 
-impl<'a> fmt::Display for ImportDescriptor<'a> {
+impl<'a, 'b> fmt::Display for ImportDescriptor<'a, 'b> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		try!(writeln!(f, "Imports from {}", self.dll_name()));
 		try!(writeln!(f, "  TimeDateStamp:  {}", self.image_.TimeDateStamp));
@@ -172,12 +172,12 @@ impl<'a> fmt::Display for ImportDescriptor<'a> {
 
 //----------------------------------------------------------------
 
-pub struct ImportNameIterator<'a> {
-	desc: &'a ImportDescriptor<'a>,
+pub struct ImportNameIterator<'a: 'b, 'b> {
+	desc: &'b ImportDescriptor<'a, 'b>,
 	it: Rva,
 }
 
-impl<'a> Iterator for ImportNameIterator<'a> {
+impl<'a, 'b> Iterator for ImportNameIterator<'a, 'b> {
 	type Item = ImportedSymbol<'a>;
 
 	fn next(&mut self) -> Option<Self::Item> {
@@ -199,12 +199,12 @@ impl<'a> Iterator for ImportNameIterator<'a> {
 	}
 }
 
-pub struct ImportTableIterator<'a> {
-	desc: &'a ImportDescriptor<'a>,
+pub struct ImportTableIterator<'a: 'b, 'b> {
+	desc: &'b ImportDescriptor<'a, 'b>,
 	it: Rva,
 }
 
-impl<'a> Iterator for ImportTableIterator<'a> {
+impl<'a, 'b> Iterator for ImportTableIterator<'a, 'b> {
 	type Item = &'a Va;
 
 	fn next(&mut self) -> Option<Self::Item> {

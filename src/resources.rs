@@ -34,7 +34,7 @@ impl<'a> Resources<'a> {
 	/// # Remarks
 	///
 	/// No validation is done ahead of time.
-	pub fn new(data: &[u8], vbase: u32) -> Resources {
+	pub fn new(data: &'a [u8], vbase: u32) -> Resources<'a> {
 		Resources {
 			data: data,
 			vbase: vbase,

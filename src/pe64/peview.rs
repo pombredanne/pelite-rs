@@ -48,7 +48,7 @@ impl<'a> PeView<'a> {
 		}
 	}
 	/// Get the mapped image as a byte slice.
-	pub fn image(&self) -> &[u8] {
+	pub fn image(&self) -> &'a [u8] {
 		self.image
 	}
 	/// Get the virtual base address.
@@ -56,28 +56,28 @@ impl<'a> PeView<'a> {
 		self.vbase
 	}
 	/// Get the dos header image.
-	pub fn dos_header(&self) -> &ImageDosHeader {
+	pub fn dos_header(&self) -> &'a ImageDosHeader {
 		unsafe {
 			// Checked in validate() so this is safe
 			&*(self.image.as_ptr() as *const ImageDosHeader)
 		}
 	}
 	/// Get the NT headers image.
-	pub fn nt_headers(&self) -> &ImageNtHeaders {
+	pub fn nt_headers(&self) -> &'a ImageNtHeaders {
 		let dos = self.dos_header();
 		// Checked in validate() so this is safe
 		unsafe { &*((dos as *const _ as *const u8).offset(dos.e_lfanew as isize) as *const ImageNtHeaders) }
 	}
 	/// Get the file header image.
-	pub fn file_header(&self) -> &ImageFileHeader {
+	pub fn file_header(&self) -> &'a ImageFileHeader {
 		&self.nt_headers().FileHeader
 	}
 	/// Get the optional header image.
-	pub fn optional_header(&self) -> &ImageOptionalHeader {
+	pub fn optional_header(&self) -> &'a ImageOptionalHeader {
 		&self.nt_headers().OptionalHeader
 	}
 	/// Get the section image headers.
-	pub fn section_headers(&self) -> &[ImageSectionHeader] {
+	pub fn section_headers(&self) -> &'a [ImageSectionHeader] {
 		let nt = self.nt_headers();
 		// Checked in validate() so this is safe
 		unsafe {
@@ -86,7 +86,7 @@ impl<'a> PeView<'a> {
 		}
 	}
 	/// Get the data directory.
-	pub fn data_directory(&self) -> &[ImageDataDirectory] {
+	pub fn data_directory(&self) -> &'a [ImageDataDirectory] {
 		let opt = self.optional_header();
 		// Checked in validate() so this is safe
 		unsafe { slice::from_raw_parts(opt.DataDirectory.as_ptr(), opt.NumberOfRvaAndSizes as usize) }
@@ -116,7 +116,7 @@ impl<'a> PeView<'a> {
 	/// This typically means data somewhere was corrupted resulting in an invalid `rva`.
 	/// Corruption may trigger a panic but it is not guaranteed if the result happens to look correct.
 	/// At no point will it read out of bounds memory.
-	pub fn read_struct<T>(&self, rva: Rva) -> Option<&T> {
+	pub fn read_struct<T>(&self, rva: Rva) -> Option<&'a T> {
 		if rva == BADRVA {
 			None
 		}
@@ -158,7 +158,7 @@ impl<'a> PeView<'a> {
 	/// This typically means data somewhere was corrupted resulting in an invalid `rva`.
 	/// Corruption may trigger a panic but it is not guaranteed if the result happens to look correct.
 	/// At no point will it read out of bounds memory.
-	pub fn read_slice<T>(&self, rva: Rva, len: usize) -> Option<&[T]> {
+	pub fn read_slice<T>(&self, rva: Rva, len: usize) -> Option<&'a [T]> {
 		if rva == BADRVA {
 			None
 		}
@@ -191,7 +191,7 @@ impl<'a> PeView<'a> {
 	/// This typically means data somewhere was corrupted resulting in an invalid `rva`.
 	/// Corruption may trigger a panic but it is not guaranteed if the result happens to look correct.
 	/// At no point will it read out of bounds memory.
-	pub fn read_str(&self, rva: Rva) -> Option<&str> {
+	pub fn read_str(&self, rva: Rva) -> Option<&'a str> {
 		if rva == BADRVA {
 			None
 		}

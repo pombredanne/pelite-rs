@@ -82,37 +82,37 @@ impl<'a> fmt::Display for NamedExport<'a> {
 //----------------------------------------------------------------
 
 /// Exports directory.
-pub struct ExportDirectory<'a> {
-	view_: &'a PeView<'a>,
+pub struct ExportDirectory<'a: 'b, 'b> {
+	view_: &'b PeView<'a>,
 	datadir_: &'a ImageDataDirectory,
 	image_: &'a ImageExportDirectory,
 }
 
-impl<'a> ExportDirectory<'a> {
+impl<'a, 'b> ExportDirectory<'a, 'b> {
 	/// Get the associated `PeView`.
-	pub fn view(&self) -> &PeView {
+	pub fn view(&self) -> &'b PeView<'a> {
 		self.view_
 	}
 	/// Get the underlying export directory image.
-	pub fn image(&self) -> &ImageExportDirectory {
+	pub fn image(&self) -> &'a ImageExportDirectory {
 		self.image_
 	}
 	/// Get the export directory's name for this library.
-	pub fn name(&self) -> &str {
+	pub fn name(&self) -> &'a str {
 		self.view_.read_str(self.image_.Name).unwrap()
 	}
 	/// Get the export address table.  
-	pub fn functions(&self) -> Option<&[Rva]> {
+	pub fn functions(&self) -> Option<&'a [Rva]> {
 		self.view_.read_slice(self.image_.AddressOfFunctions, self.image_.NumberOfFunctions as usize)
 	}
 	/// Get the name address table.  
-	pub fn names(&self) -> Option<&[Rva]> {
+	pub fn names(&self) -> Option<&'a [Rva]> {
 		self.view_.read_slice(self.image_.AddressOfNames, self.image_.NumberOfNames as usize)
 	}
 	/// Get the name ordinal index table.
 	///
 	/// The value in this array is an index (not an ordinal!) into the export address table matching name in the same index as the name address table.
-	pub fn name_indices(&self) -> Option<&[u16]> {
+	pub fn name_indices(&self) -> Option<&'a [u16]> {
 		self.view_.read_slice(self.image_.AddressOfNameOrdinals, self.image_.NumberOfNames as usize)
 	}
 	/// If this is a forwarded export.
@@ -140,7 +140,7 @@ impl<'a> ExportDirectory<'a> {
 	/// # Return value
 	///
 	/// `Export` value.
-	pub fn symbol_by_ordinal(&self, ord: u16) -> Export {
+	pub fn symbol_by_ordinal(&self, ord: u16) -> Export<'a> {
 		if let Some(functions) = self.functions() {
 			let ord_idx = ord - self.image_.Base as u16;
 			if let Some(sym_rva) = functions.get(ord_idx as usize) {
@@ -162,7 +162,7 @@ impl<'a> ExportDirectory<'a> {
 	/// # Return value
 	///
 	/// `Export` value.
-	pub fn symbol_by_name(&self, name: &str) -> Export {
+	pub fn symbol_by_name(&self, name: &str) -> Export<'a> {
 		if let Some(functions) = self.functions() {
 		if let Some(names) = self.names() {
 		if let Some(name_indices) = self.names() {
@@ -192,7 +192,7 @@ impl<'a> ExportDirectory<'a> {
 	/// # Return value
 	///
 	/// `NamedExport` value.
-	pub fn name_from_ordinal(&self, ord: u16) -> NamedExport {
+	pub fn name_from_ordinal(&self, ord: u16) -> NamedExport<'a> {
 		if let Some(functions) = self.functions() {
 			let ord_idx = ord - self.image_.Base as u16;
 			if let Some(sym_rva) = functions.get(ord_idx as usize) {
@@ -240,7 +240,7 @@ impl<'a> ExportDirectory<'a> {
 	}
 }
 
-impl<'a> fmt::Display for ExportDirectory<'a> {
+impl<'a, 'b> fmt::Display for ExportDirectory<'a, 'b> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		try!(writeln!(f, "Exports for {}", self.name()));
 		try!(writeln!(f, "  Characteristics: {:>08X}", self.image_.Characteristics));
@@ -292,12 +292,12 @@ impl<'a> PeExports for PeView<'a> {
 
 //----------------------------------------------------------------
 
-pub struct ExportIterator<'a> {
-	exp: &'a ExportDirectory<'a>,
+pub struct ExportIterator<'a: 'b, 'b> {
+	exp: &'b ExportDirectory<'a, 'b>,
 	it: u16,
 }
 
-impl<'a> Iterator for ExportIterator<'a> {
+impl<'a, 'b> Iterator for ExportIterator<'a, 'b> {
 	type Item = u16;
 
 	fn next(&mut self) -> Option<Self::Item> {
