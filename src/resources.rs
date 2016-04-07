@@ -34,6 +34,7 @@ impl<'a> Resources<'a> {
 	/// # Remarks
 	///
 	/// No validation is done ahead of time.
+	#[inline]
 	pub fn new(data: &'a [u8], vbase: u32) -> Resources<'a> {
 		Resources {
 			data: data,
@@ -41,6 +42,7 @@ impl<'a> Resources<'a> {
 		}
 	}
 	/// Start by getting the root directory entry.
+	#[inline]
 	pub fn root(&self) -> ResourceDirectoryEntry {
 		const ROOT_ENTRY: &'static ImageResourceDirectoryEntry = &ImageResourceDirectoryEntry { Name: 0, Offset: 0x80000000 };
 		ResourceDirectoryEntry {
@@ -108,10 +110,12 @@ pub struct ResourceDirectoryEntry<'a> {
 
 impl<'a> ResourceDirectoryEntry<'a> {
 	/// Get the resources being worked with.
+	#[inline]
 	pub fn resources(&self) -> &Resources {
 		self.resrc_
 	}
 	/// Get the underlying directory entry image.
+	#[inline]
 	pub fn image(&self) -> &ImageResourceDirectoryEntry {
 		&self.image_
 	}
@@ -127,6 +131,7 @@ impl<'a> ResourceDirectoryEntry<'a> {
 		}
 	}
 	/// Is this entry a subdirectory?
+	#[inline]
 	pub fn is_dir(&self) -> bool {
 		self.image_.Offset & 0x80000000 != 0
 	}
@@ -218,14 +223,17 @@ pub struct ResourceDirectory<'a> {
 
 impl<'a> ResourceDirectory<'a> {
 	/// Get the resources being worked with.
+	#[inline]
 	pub fn resources(&self) -> &Resources {
 		self.entry_.resrc_
 	}
 	/// Get the directory entry for this subdirectory.
+	#[inline]
 	pub fn entry(&self) -> &ResourceDirectoryEntry {
 		self.entry_
 	}
 	/// Get the underlying directory image.
+	#[inline]
 	pub fn image(&self) -> &ImageResourceDirectory {
 		self.image_
 	}
@@ -237,6 +245,7 @@ impl<'a> ResourceDirectory<'a> {
 		})
 	}
 	/// Iterate over the child entries.
+	#[inline]
 	pub fn iter(&self) -> ResourceDirectoryIterator {
 		ResourceDirectoryIterator {
 			dir: self,
@@ -294,14 +303,17 @@ pub struct ResourceDataEntry<'a> {
 
 impl<'a> ResourceDataEntry<'a> {
 	/// Get the resources being worked with.
+	#[inline]
 	pub fn resources(&self) -> &Resources {
 		self.entry_.resrc_
 	}
 	/// Get the directory entry for this data entry.
+	#[inline]
 	pub fn entry(&self) -> &ResourceDirectoryEntry {
 		self.entry_
 	}
 	/// Get the underlying data entry image.
+	#[inline]
 	pub fn image(&self) -> &ImageResourceDataEntry {
 		self.image_
 	}

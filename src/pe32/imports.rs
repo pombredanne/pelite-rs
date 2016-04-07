@@ -41,10 +41,12 @@ pub struct ImportDirectory<'a: 'b, 'b> {
 
 impl<'a, 'b> ImportDirectory<'a, 'b> {
 	/// Get the associated `PeView`.
+	#[inline]
 	pub fn view(&self) -> &PeView {
 		self.view_
 	}
 	/// Iterate over the import descriptors.
+	#[inline]
 	pub fn iter(&'a self) -> ImportDescriptorIterator<'a, 'b> {
 		ImportDescriptorIterator {
 			view: self.view_,
@@ -130,18 +132,22 @@ pub struct ImportDescriptor<'a: 'b, 'b> {
 
 impl<'a, 'b> ImportDescriptor<'a, 'b> {
 	/// Get the associated `PeView`.
+	#[inline]
 	pub fn view(&self) -> &'b PeView {
 		self.view_
 	}
 	/// Get the underlying import descriptor image.
+	#[inline]
 	pub fn image(&self) -> &'a ImageImportDescriptor {
 		self.image_
 	}
 	/// Get the DLL name imported from.
+	#[inline]
 	pub fn dll_name(&self) -> &'a str {
 		self.view_.read_str(self.image_.Name).unwrap()
 	}
 	/// Iterate over the import name table.
+	#[inline]
 	pub fn int_iter(&self) -> ImportNameIterator {
 		ImportNameIterator {
 			desc: self,
@@ -149,6 +155,7 @@ impl<'a, 'b> ImportDescriptor<'a, 'b> {
 		}
 	}
 	/// Iterate over the import address table.
+	#[inline]
 	pub fn iat_iter(&self) -> ImportTableIterator {
 		ImportTableIterator {
 			desc: self,

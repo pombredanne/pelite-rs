@@ -145,6 +145,7 @@ impl PeFile {
 		Ok(())
 	}
 	/// Get a view into the mapped image.
+	#[inline]
 	pub fn view(&self) -> PeView {
 		// With all the extensive error and sanity checking earlier, this better be safe...
 		unsafe { PeView::module(self.buf.as_ptr()) }

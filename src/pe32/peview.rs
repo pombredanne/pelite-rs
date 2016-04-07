@@ -17,6 +17,7 @@ pub struct PeView<'a> {
 impl<'a> PeView<'a> {
 	/// Create a new instance of PeView of the module this code is executing in.
 	#[cfg(all(windows, target_pointer_width = "32"))]
+	#[inline]
 	pub fn new() -> PeView<'a> {
 		// Should be safe, unless you go fucking around with stuff like erasing PE headers. Don't do that.
 		unsafe { Self::module(image_base() as *const _ as *const u8) }
@@ -39,6 +40,7 @@ impl<'a> PeView<'a> {
 	///
 	/// No sanity or safety checks are done to make sure this is really a PE32 module.
 	/// When using this with a `HMODULE` from the system the caller must be sure this is a PE32 module, ie this is a 32 bit process.
+	#[inline]
 	pub unsafe fn module(base: *const u8) -> PeView<'a> {
 		let dos = &*(base as *const ImageDosHeader);
 		let nt = &*(base.offset(dos.e_lfanew as isize) as *const ImageNtHeaders);
@@ -48,14 +50,17 @@ impl<'a> PeView<'a> {
 		}
 	}
 	/// Get the mapped image as a byte slice.
+	#[inline]
 	pub fn image(&self) -> &'a [u8] {
 		self.image
 	}
 	/// Get the virtual base address.
+	#[inline]
 	pub fn virtual_base(&self) -> Va {
 		self.vbase
 	}
 	/// Get the dos header image.
+	#[inline]
 	pub fn dos_header(&self) -> &'a ImageDosHeader {
 		unsafe {
 			// Checked in validate() so this is safe
@@ -63,20 +68,24 @@ impl<'a> PeView<'a> {
 		}
 	}
 	/// Get the NT headers image.
+	#[inline]
 	pub fn nt_headers(&self) -> &'a ImageNtHeaders {
 		let dos = self.dos_header();
 		// Checked in validate() so this is safe
 		unsafe { &*((dos as *const _ as *const u8).offset(dos.e_lfanew as isize) as *const ImageNtHeaders) }
 	}
 	/// Get the file header image.
+	#[inline]
 	pub fn file_header(&self) -> &'a ImageFileHeader {
 		&self.nt_headers().FileHeader
 	}
 	/// Get the optional header image.
+	#[inline]
 	pub fn optional_header(&self) -> &'a ImageOptionalHeader {
 		&self.nt_headers().OptionalHeader
 	}
 	/// Get the section image headers.
+	#[inline]
 	pub fn section_headers(&self) -> &'a [ImageSectionHeader] {
 		let nt = self.nt_headers();
 		// Checked in validate() so this is safe
@@ -86,6 +95,7 @@ impl<'a> PeView<'a> {
 		}
 	}
 	/// Get the data directory.
+	#[inline]
 	pub fn data_directory(&self) -> &'a [ImageDataDirectory] {
 		let opt = self.optional_header();
 		// Checked in validate() so this is safe
@@ -262,6 +272,7 @@ impl<'a> PeView<'a> {
 	/// # Remarks
 	///
 	/// The `rva` parameter isn't sanity checked to make sure it points within this image.
+	#[inline]
 	pub fn rva_to_va(&self, rva: Rva) -> Va {
 		if rva != BADRVA { self.vbase + rva as Va }
 		else { BADVA }
@@ -283,6 +294,7 @@ impl<'a> PeView<'a> {
 	/// The `va` parameter isn't sanity checked to make sure it points within this image.
 	///
 	/// **FIXME!** This is especially problematic in PE64 images where Va is 64 bit and the resulting value doesn't fit in a 32 bit Rva...
+	#[inline]
 	pub fn va_to_rva(&self, va: Va) -> Rva {
 		if va != BADVA {
 			// FIXME! Overflow or underflow are very unsafe here!

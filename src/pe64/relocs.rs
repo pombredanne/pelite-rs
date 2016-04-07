@@ -17,10 +17,12 @@ pub struct RelocsDirectory<'a: 'b, 'b> {
 
 impl<'a, 'b> RelocsDirectory<'a, 'b> {
 	/// Get the associated `PeView`.
+	#[inline]
 	pub fn view(&self) -> &PeView {
 		self.view_
 	}
 	/// Iterate over the relocations.
+	#[inline]
 	pub fn iter(&self) -> RelocsIterator {
 		RelocsIterator {
 			relocs: self,
@@ -108,23 +110,28 @@ pub struct BaseRelocations<'a: 'b, 'b> {
 
 impl<'a, 'b> BaseRelocations<'a, 'b> {
 	/// Get the associated `PeView`.
+	#[inline]
 	pub fn view(&self) -> &PeView {
 		self.view_
 	}
 	/// Get the base relocation image.
+	#[inline]
 	pub fn image(&self) -> &'a ImageBaseRelocation {
 		self.reloc_
 	}
 	/// Get the base reloc blocks as a slice.
+	#[inline]
 	pub fn blocks(&self) -> &'a [ImageBaseRelocBlock] {
 		self.blocks_
 	}
 	/// Get the final Rva of a reloc block.
+	#[inline]
 	pub fn rva_of(&self, block: &ImageBaseRelocBlock) -> Rva {
 		let offset = (block.TypeAndOffset & 0x0FFF) as Rva;
 		self.reloc_.VirtualAddress + offset
 	}
 	/// Get the type of a reloc block.
+	#[inline]
 	pub fn type_of(&self, block: &ImageBaseRelocBlock) -> u8 {
 		((block.TypeAndOffset >> 12) & 0xFF) as u8
 	}

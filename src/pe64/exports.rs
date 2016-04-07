@@ -90,28 +90,34 @@ pub struct ExportDirectory<'a: 'b, 'b> {
 
 impl<'a, 'b> ExportDirectory<'a, 'b> {
 	/// Get the associated `PeView`.
+	#[inline]
 	pub fn view(&self) -> &'b PeView<'a> {
 		self.view_
 	}
 	/// Get the underlying export directory image.
+	#[inline]
 	pub fn image(&self) -> &'a ImageExportDirectory {
 		self.image_
 	}
 	/// Get the export directory's name for this library.
+	#[inline]
 	pub fn name(&self) -> &'a str {
 		self.view_.read_str(self.image_.Name).unwrap()
 	}
 	/// Get the export address table.  
+	#[inline]
 	pub fn functions(&self) -> Option<&'a [Rva]> {
 		self.view_.read_slice(self.image_.AddressOfFunctions, self.image_.NumberOfFunctions as usize)
 	}
 	/// Get the name address table.  
+	#[inline]
 	pub fn names(&self) -> Option<&'a [Rva]> {
 		self.view_.read_slice(self.image_.AddressOfNames, self.image_.NumberOfNames as usize)
 	}
 	/// Get the name ordinal index table.
 	///
 	/// The value in this array is an index (not an ordinal!) into the export address table matching name in the same index as the name address table.
+	#[inline]
 	pub fn name_indices(&self) -> Option<&'a [u16]> {
 		self.view_.read_slice(self.image_.AddressOfNameOrdinals, self.image_.NumberOfNames as usize)
 	}
@@ -126,6 +132,7 @@ impl<'a, 'b> ExportDirectory<'a, 'b> {
 	/// # Return value
 	///
 	/// Returns if `rva` is a forwarded symbol.
+	#[inline]
 	pub fn is_forwarded(&self, rva: Rva) -> bool {
 		rva >= self.datadir_.VirtualAddress && rva < self.datadir_.VirtualAddress + self.datadir_.Size
 	}
@@ -232,6 +239,7 @@ impl<'a, 'b> ExportDirectory<'a, 'b> {
 		}
 	}
 	/// Iterate over the ordinals of the exports.
+	#[inline]
 	pub fn iter(&self) -> ExportIterator {
 		ExportIterator {
 			exp: self,

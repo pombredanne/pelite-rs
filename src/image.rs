@@ -14,6 +14,7 @@ extern "C" {
 ///
 /// This uses a linker pseudovariable and is only available on windows targets.
 #[cfg(all(windows, target_env = "msvc"))]
+#[inline]
 pub fn image_base() -> &'static ImageDosHeader {
 	&__ImageBase
 }
@@ -21,6 +22,7 @@ pub fn image_base() -> &'static ImageDosHeader {
 ///
 /// This uses a linker pseudovariable and is only available on windows targets.
 #[cfg(all(windows, target_env = "gnu"))]
+#[inline]
 pub fn image_base() -> &'static ImageDosHeader {
 	&_image_base__
 }
